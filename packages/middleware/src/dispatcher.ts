@@ -1,5 +1,6 @@
 
 import * as assert from 'assert'
+import is from '@sindresorhus/is'
 import { compose } from './composer'
 import { Middleware, ComposedMiddleware } from './types'
 
@@ -25,7 +26,7 @@ export class Dispatcher<T> {
    * @public
    */
   public use (fn: Middleware<T>): this {
-    assert(typeof fn === 'function', `Expect a function but got: ${typeof fn}.`)
+    assert(is.function_(fn), `Expect a function but got: "${is(fn)}"`)
     this._middlewares.push(fn)
     return this
   }

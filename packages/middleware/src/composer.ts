@@ -1,5 +1,6 @@
 
 import * as assert from 'assert'
+import is from '@sindresorhus/is'
 import { Middleware, ComposedMiddleware } from './types'
 
 /**
@@ -9,10 +10,10 @@ import { Middleware, ComposedMiddleware } from './types'
  * @public
  */
 export function compose<T> (fns: Middleware<T>[]): ComposedMiddleware<T> {
-  assert(Array.isArray(fns), `Expect an array of functions but got ${typeof fns}`)
+  assert(is.array(fns), `Expect an array of functions but got "${is(fns)}"`)
 
   for (let fn of fns) {
-    assert(typeof fn === 'function', `Expect a function but got "${typeof fn}"`)
+    assert(is.function_(fn), `Expect a function but got "${is(fn)}"`)
   }
 
   return (arg: T, done: (() => any) | undefined) => {

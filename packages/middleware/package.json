@@ -3,6 +3,9 @@
   "version": "1.0.0-alpha",
   "description": "",
   "main": "lib/index.js",
+  "engines": {
+    "node": ">=8"
+  },
   "scripts": {
     "build": "tsc",
     "prepublish": "npm run build",
@@ -14,9 +17,13 @@
   ],
   "keywords": [
     "aldo",
+    "compose",
     "middleware",
     "dispatcher"
   ],
+  "bugs": {
+    "url": "https://github.com/aldojs/framework/issues"
+  },
   "author": "absolux",
   "license": "MIT",
   "devDependencies": {

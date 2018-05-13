@@ -132,6 +132,26 @@ export class Server {
 }
 
 /**
+ * Create a HTTP(S) Server
+ * 
+ * @param fn The request listener
+ * @param options
+ */
+export function factory (fn: RequestHandler, options: { tls?: https.ServerOptions } = {}): Server {
+  return new Server(_createNativeServer(options.tls)).on('request', fn)
+}
+
+/**
+ * Create native server
+ * 
+ * @param tls Secure server options
+ * @private
+ */
+function _createNativeServer (tls?: https.ServerOptions): http.Server | https.Server {
+  return tls ? https.createServer(tls) : http.createServer()
+}
+
+/**
  * Defer the function invocation to the next tick
  * 
  * @param fn The event listener

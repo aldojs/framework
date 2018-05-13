@@ -1,3 +1,3 @@
 
-export { Dispatcher } from './dispatcher'
-export { compose } from './composer'
+export * from './dispatcher'
+export * from './composer'

@@ -3,7 +3,7 @@ import 'mocha'
 import * as assert from 'assert'
 import { createRequest } from './_support'
 
-describe('req.is(type)', () => {
+describe('request.is(type)', () => {
   it('should ignore params', () => {
     const request = createRequest({
       headers: {

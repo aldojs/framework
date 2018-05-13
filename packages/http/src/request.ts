@@ -62,7 +62,7 @@ export class Request {
     let { method = 'GET', headers, socket } = req
     let instance = new Request(pathname, method, headers)
 
-    instance.secure = (socket as any).encrypted
+    instance.secure = Boolean((socket as any).encrypted)
     instance.querystring = query as string
     instance.connection = socket
     instance.stream = req
@@ -113,7 +113,7 @@ export class Request {
    * 
    * @param header
    */
-  public get (header: string): string | { [x: string]: any } | string[] | undefined {
+  public get (header: string): string | string[] | undefined {
     switch (header = header.toLowerCase()) {
       case 'referer':
       case 'referrer':

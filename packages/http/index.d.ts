@@ -354,13 +354,15 @@ export declare class Response {
  * @param fn The request listener
  * @param options
  */
-export declare function factory(fn: RequestHandler, options?: {
+export declare function createServer(fn: RequestHandler, options?: {
   tls?: https.ServerOptions;
 }): Server;
 
 export interface RequestHandler {
-  (request: Request, response: (content?: any) => Response): any;
+  (request: Request, response: ResponseFactory): any;
 }
+
+export type ResponseFactory = (content?: any) => Response;
 
 export declare type EventListener = (...args: any[]) => any;
 

@@ -2,13 +2,17 @@
 import * as assert from 'assert'
 import is from '@sindresorhus/is'
 import * as createDebugger from 'debug'
-import { Dispatcher } from 'aldo-middleware'
-import { ContextFactory, Context } from './context'
 import { Request, createServer, Server } from 'aldo-http'
+import { ContextFactory, Context as BaseContext } from './context'
+import { Dispatcher, Middleware as BaseMiddleware } from 'aldo-middleware'
 
 const debug = createDebugger('aldo:application')
 
-export type Middleware = (ctx: Context, next: () => any) => any
+export type Middleware = BaseMiddleware<Context>
+
+export interface Context extends BaseContext {
+  request: Request
+}
 
 export class Application {
   /**
@@ -16,7 +20,7 @@ export class Application {
    * 
    * @private
    */
-  private _context = new ContextFactory()
+  private _context = new ContextFactory<Context>()
 
   /**
    * The middleware dispatcher
@@ -45,7 +49,7 @@ export class Application {
    * @public
    */
   public handle (request: Request): Promise<any> {
-    let ctx = this._context.create(request)
+    let ctx = this._createContext(request)
 
     debug(`dispatching: ${request.method} ${request.url}`)
 
@@ -112,5 +116,14 @@ export class Application {
     await server.start(...args)
 
     return server
+  }
+
+  private _createContext (request: Request): Context {
+    let ctx = this._context.create()
+
+    // add the incoming request
+    ctx.request = request
+
+    return ctx
   }
 }

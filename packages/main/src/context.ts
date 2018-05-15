@@ -1,18 +1,15 @@
 
-import { Request } from 'aldo-http'
-
 export interface Context {
-  request: Request
   [field: string]: any
 }
 
-export class ContextFactory {
+export class ContextFactory<T extends Context> {
   /**
    * The context store
    * 
    * @private
    */
-  private _store: Context
+  private _store: T
 
   /**
    * Create a new context factory
@@ -46,21 +43,21 @@ export class ContextFactory {
    * @param fn
    * @public
    */
-  bind (prop: string, fn: (ctx: Context) => any) {
+  bind (prop: string, fn: (ctx: T) => any) {
     var field = `_${prop}`
 
     Reflect.defineProperty(this._store, prop, {
       configurable: true,
       enumerable: true,
       get () {
-        if ((this as Context)[field] === undefined) {
+        if ((this as T)[field] === undefined) {
           // private property
           Reflect.defineProperty(this, field, {
-            value: fn(this as Context)
+            value: fn(this as T)
           })
         }
 
-        return (this as Context)[field]
+        return (this as T)[field]
       }
     })
   }
@@ -90,11 +87,7 @@ export class ContextFactory {
    *
    * @public
    */
-  create (request: Request): Context {
-    let ctx = Object.create(this._store)
-
-    ctx.request = request
-
-    return ctx
+  create (): T {
+    return Object.create(this._store)
   }
 }

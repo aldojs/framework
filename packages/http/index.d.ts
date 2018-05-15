@@ -176,7 +176,9 @@ export declare class Response {
   send(res: http.ServerResponse): void;
 }
 
-export type RequestHandler = (request: Request) => any;
+export type RequestHandler = HandlerFn | { handle: HandlerFn; };
+
+export type HandlerFn = (request: Request) => any;
 
 export declare type EventListener = (...args: any[]) => any;
 
@@ -197,10 +199,10 @@ export declare class Server {
    * Add a `listener` for the given `event`
    *
    * @param event The event name
-   * @param fn The event listener
+   * @param handler The event listener
    * @public
    */
-  on(event: 'request', fn: RequestHandler): this;
+  on(event: 'request', handler: RequestHandler): this;
   on(event: string, fn: EventListener): this;
 
   /**
@@ -226,10 +228,10 @@ export interface createServerOptions {
  * Create a HTTP(S) Server
  * 
  * @param options Server options
- * @param fn The request handler
+ * @param handler The request handler
  * @public
  */
-export function createServer (options: createServerOptions, fn: RequestHandler): Server;
+export function createServer (options: createServerOptions, handler: RequestHandler): Server;
 
 /**
  * Create a HTTP(S) Server
@@ -241,9 +243,9 @@ export function createServer (options: createServerOptions): Server;
 /**
  * Create a HTTP(S) Server
  * 
- * @param fn The request handler
+ * @param handler The request handler
  */
-export function createServer (fn: RequestHandler): Server;
+export function createServer (handler: RequestHandler): Server;
 
 /**
  * Create a HTTP(S) Server

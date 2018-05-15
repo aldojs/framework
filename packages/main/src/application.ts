@@ -1,11 +1,10 @@
 
-import * as net from 'net'
 import * as assert from 'assert'
 import is from '@sindresorhus/is'
 import * as createDebugger from 'debug'
 import { Dispatcher } from 'aldo-middleware'
 import { ContextFactory, Context } from './context'
-import { Request, Response, createServer, Server, RequestHandler } from 'aldo-http'
+import { Request, createServer, Server } from 'aldo-http'
 
 const debug = createDebugger('aldo:application')
 
@@ -14,11 +13,15 @@ export type Middleware = (ctx: Context, next: () => any) => any
 export class Application {
   /**
    * The context factory
+   * 
+   * @private
    */
   private _context = new ContextFactory()
 
   /**
    * The middleware dispatcher
+   * 
+   * @private
    */
   private _dispatcher = new Dispatcher<Context>()
 
@@ -26,6 +29,7 @@ export class Application {
    * Use a middleware
    *
    * @param fn
+   * @public
    */
   public use (fn: Middleware) {
     assert(typeof fn === 'function', `Expect a function but got: ${is(fn)}.`)
@@ -46,15 +50,6 @@ export class Application {
     debug(`dispatching: ${request.method} ${request.url}`)
 
     return this._dispatcher.dispatch(ctx)
-  }
-
-  /**
-   * Return a request handler
-   * 
-   * @public
-   */
-  public callback (): RequestHandler {
-    return (request) => this.handle(request)
   }
 
   /**
@@ -107,9 +102,15 @@ export class Application {
   /**
    * Shorthand for:
    *
-   *     http.createServer(app.callback()).start(...arguments)
+   *     createServer(app).start(...arguments)
+   * 
+   * @public
    */
-  public start (portOrOptions?: number | net.ListenOptions): Promise<Server> {
-    return createServer(this.callback()).start(portOrOptions)
+  public async start (...args: any[]): Promise<Server> {
+    let server = createServer(this)
+
+    await server.start(...args)
+
+    return server
   }
 }

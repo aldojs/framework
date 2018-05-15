@@ -2,9 +2,7 @@
 import { Stream } from 'stream'
 import * as assert from 'assert'
 import is from '@sindresorhus/is'
-import { Request } from './request'
 import * as statuses from 'statuses'
-import { is as typeis } from 'type-is'
 import { contentType } from 'mime-types'
 import { OutgoingHttpHeaders, ServerResponse } from 'http'
 
@@ -40,19 +38,6 @@ export class Response {
       this.statusCode = 200
       this.statusMessage = 'OK'
     }
-  }
-
-  /**
-   * Create a response instance from the given content
-   * 
-   * @param content The response body
-   * @public
-   * @static
-   */
-  public static from (content?: any): Response {
-    if (content instanceof Response) return content
-
-    return new Response(content)
   }
 
   /**
@@ -93,7 +78,7 @@ export class Response {
     if (type) {
       this.set('Content-Type', type)
     }
-    
+
     return this
   }
 
@@ -173,20 +158,6 @@ export class Response {
   }
 
   /**
-   * Check if the incoming request contains the "Content-Type"
-   * header field, and it contains any of the give mime `type`s.
-   * 
-   * It returns the first matching type or false otherwise.
-   * 
-   * Pretty much the same as `Request.is()`
-   * 
-   * @param types
-   */
-  public is (...types: string[]): string | false {
-    return typeis(this.get('Content-Type') as string, types)
-  }
-
-  /**
    * Get the response header if present, or undefined
    * 
    * @param header
@@ -196,7 +167,7 @@ export class Response {
   }
 
   /**
-   * Set the response header, or pass an object of header fields.
+   * Set multiple headers at once
    * 
    * Examples:
    * 
@@ -207,7 +178,7 @@ export class Response {
   public set (headers: { [field: string]: string | number | string[] }): this
 
   /**
-   * Set the response header, or pass an object of header fields.
+   * Set the response header
    * 
    * Examples:
    * 

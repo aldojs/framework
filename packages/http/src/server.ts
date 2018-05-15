@@ -3,15 +3,14 @@ import * as net from 'net'
 import * as http from 'http'
 import * as https from 'https'
 import is from '@sindresorhus/is'
-import { Request } from './request'
 import { setImmediate } from 'timers'
 import { Response } from './response'
 
-export interface RequestHandler {
-  (request: Request, response: (content?: any) => Response): any
-}
+export type RequestHandler = (request: Request) => any
 
 export type EventListener = (...args: any[]) => any
+
+export type Request = http.IncomingMessage
 
 export class Server {
   /**
@@ -44,8 +43,8 @@ export class Server {
    * 
    * @public
    */
-  public start (portOrOptions: number | net.ListenOptions): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  public start (portOrOptions: number | net.ListenOptions): Promise<Server> {
+    return new Promise<Server>((resolve, reject) => {
       // attach the error listener
       this.native.once('error', reject)
 
@@ -55,7 +54,7 @@ export class Server {
         this.native.removeListener('error', reject)
 
         // resolve the promise
-        resolve()
+        resolve(this)
       })
     })
   }
@@ -92,13 +91,13 @@ export class Server {
    * @param req The incoming message
    * @private
    */
-  private async _getResponse (fn: RequestHandler, req: http.IncomingMessage) {
+  private async _getResponse (fn: RequestHandler, req: Request) {
     try {
-      let output = await fn(this._makeRequest(req), Response.from)
+      let output = await fn(req)
 
       if (output instanceof Response) return output
 
-      return Response.from(output)
+      return new Response(output)
     } catch (err) {
       // normalize
       if (! (err instanceof Error)) {
@@ -114,41 +113,12 @@ export class Server {
       // support ENOENT
       if (err.code === 'ENOENT') status = 404
 
-      return Response.from(body)
+      return new Response(body)
         .status(_isValid(status) ? status : 500)
         .type('text/plain; charset=utf-8')
         .set(err.headers || {})
     }
   }
-
-  /**
-   * Create a request instance
-   * 
-   * @private
-   */
-  private _makeRequest (req: http.IncomingMessage): Request {
-    return Request.from(req)
-  }
-}
-
-/**
- * Create a HTTP(S) Server
- * 
- * @param fn The request listener
- * @param options
- */
-export function factory (fn: RequestHandler, options: { tls?: https.ServerOptions } = {}): Server {
-  return new Server(_createNativeServer(options.tls)).on('request', fn)
-}
-
-/**
- * Create native server
- * 
- * @param tls Secure server options
- * @private
- */
-function _createNativeServer (tls?: https.ServerOptions): http.Server | https.Server {
-  return tls ? https.createServer(tls) : http.createServer()
 }
 
 /**

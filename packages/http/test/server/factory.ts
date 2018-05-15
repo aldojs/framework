@@ -12,7 +12,7 @@ describe('createServer()', () => {
   })
 
   it ('should return an instance of `Server`', () => {
-    assert(createServer(noop as any) instanceof Server)
+    assert(createServer() instanceof Server)
   })
 
   it('should set the listener', () => {
@@ -23,7 +23,7 @@ describe('createServer()', () => {
 
   describe('when `tls` options are provided', () => {
     it('should create a HTTPS server', () => {
-      var server = createServer(noop as any, { tls: {} })
+      var server = createServer({ tls: {} })
 
       assert(server.native instanceof https.Server)
     })

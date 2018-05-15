@@ -6,158 +6,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as stream from 'stream';
 
-export declare class Request {
-  /**
-   * The URL path name
-   */
-  url: string;
-
-  /**
-   * The request method
-   */
-  method: string;
-
-  /**
-   * The request headers
-   */
-  headers: http.IncomingHttpHeaders;
-
-  /**
-   * The request parsed body
-   */
-  body: any;
-
-  /**
-   * The URL query string
-   *
-   * @public
-   */
-  querystring: string;
-
-  /**
-   * The incoming request stream
-   *
-   * @public
-   */
-  stream?: stream.Readable;
-
-  /**
-   * The connection socket
-   *
-   * @public
-   */
-  connection?: net.Socket;
-
-  /**
-   * Returns true when requested with TLS, false otherwise
-   *
-   * @public
-   */
-  secure: boolean;
-
-  /**
-   * The request mime type, void of parameters such as "charset", or undefined
-   *
-   * @public
-   */
-  readonly type: string | undefined;
-
-  /**
-   * The `Content-Length` when present
-   *
-   * @public
-   */
-  readonly length: number | undefined;
-
-  /**
-   * Contruct a new request instance
-   *
-   * @param url The URL path name
-   * @param method The request method
-   * @param headers The request headers
-   * @param body The request parsed body
-   */
-  constructor(url: string, method: string, headers?: http.IncomingHttpHeaders, body?: any);
-
-  /**
-   * Create a response instance from the given content
-   *
-   * @param
-   * @public
-   * @static
-   */
-  static from(req: http.IncomingMessage): Request;
-
-  /**
-   * Returns the request header value
-   *
-   * Case insensitive name matching.
-   *
-   * The `Referrer` header field is special-cased,
-   * both `Referrer` and `Referer` are interchangeable.
-   *
-   * Examples:
-   *
-   *     this.get('Content-Type')
-   *     // => "text/plain"
-   *
-   *     this.get('content-type')
-   *     // => "text/plain"
-   *
-   *     this.get('Something')
-   *     // => undefined
-   *
-   * @param header
-   */
-  get(header: string): string | string[] | undefined;
-
-  /**
-   * Check if the header is present
-   *
-   * Case insensitive name matching.
-   *
-   * The `Referrer` header field is special-cased,
-   * both `Referrer` and `Referer` are interchangeable.
-   *
-   * Examples:
-   *
-   *     this.has('Content-Type')
-   *     // => true
-   *
-   *     this.has('content-type')
-   *     // => true
-   *
-   *     this.has('Something')
-   *     // => false
-   *
-   * @param header
-   */
-  has(header: string): boolean;
-
-  /**
-   * Check if the incoming request contains the "Content-Type"
-   * header field, and it contains any of the give mime `type`s.
-   *
-   * It returns the first matching type or false otherwise
-   *
-   * Examples:
-   *
-   *     // With Content-Type: text/html charset=utf-8
-   *     this.is('html') // => 'html'
-   *     this.is('text/html') // => 'text/html'
-   *     this.is('text/*', 'application/json') // => 'text/html'
-   *
-   *     // When Content-Type is application/json
-   *     this.is('json', 'urlencoded') // => 'json'
-   *     this.is('application/json') // => 'application/json'
-   *     this.is('html', 'application/*') // => 'application/json'
-   *
-   *     this.is('html') // => false
-   *
-   * @param types
-   */
-  is(...types: string[]): string | false;
-}
+export type Request = http.IncomingMessage;
 
 export declare class Response {
   /**
@@ -186,15 +35,6 @@ export declare class Response {
    * @param content
    */
   constructor(content?: any);
-
-  /**
-   * Create a response instance from the given content
-   *
-   * @param content The response body
-   * @public
-   * @static
-   */
-  static from(content?: any): Response;
 
   /**
    * Set the response status code
@@ -258,18 +98,6 @@ export declare class Response {
   setCookie(cookie: string): this;
 
   /**
-   * Check if the incoming request contains the "Content-Type"
-   * header field, and it contains any of the give mime `type`s.
-   *
-   * It returns the first matching type or false otherwise.
-   *
-   * Pretty much the same as `Request.is()`
-   *
-   * @param types
-   */
-  is(...types: string[]): string | false;
-
-  /**
    * Get the response header if present, or undefined
    *
    * @param header
@@ -277,7 +105,7 @@ export declare class Response {
   get(header: string): string | number | string[] | undefined;
 
   /**
-   * Set the response header, or pass an object of header fields.
+   * Pass an object of header fields
    *
    * Examples:
    *
@@ -290,7 +118,7 @@ export declare class Response {
   }): this;
 
   /**
-   * Set the response header, or pass an object of header fields.
+   * Set the response header
    *
    * Examples:
    *
@@ -348,21 +176,7 @@ export declare class Response {
   send(res: http.ServerResponse): void;
 }
 
-/**
- * Create a HTTP(S) Server
- *
- * @param fn The request listener
- * @param options
- */
-export declare function createServer(fn: RequestHandler, options?: {
-  tls?: https.ServerOptions;
-}): Server;
-
-export interface RequestHandler {
-  (request: Request, response: ResponseFactory): any;
-}
-
-export type ResponseFactory = (content?: any) => Response;
+export type RequestHandler = (request: Request) => any;
 
 export declare type EventListener = (...args: any[]) => any;
 
@@ -394,7 +208,7 @@ export declare class Server {
    *
    * @public
    */
-  start(portOrOptions: number | net.ListenOptions): Promise<void>;
+  start(portOrOptions?: number | net.ListenOptions): Promise<Server>;
 
   /**
    * Stops the server from accepting new requests
@@ -403,3 +217,35 @@ export declare class Server {
    */
   stop(): Promise<void>;
 }
+
+export interface createServerOptions {
+  tls?: https.ServerOptions
+}
+
+/**
+ * Create a HTTP(S) Server
+ * 
+ * @param options Server options
+ * @param fn The request handler
+ * @public
+ */
+export function createServer (options: createServerOptions, fn: RequestHandler): Server;
+
+/**
+ * Create a HTTP(S) Server
+ * 
+ * @param options Server options
+ */
+export function createServer (options: createServerOptions): Server;
+
+/**
+ * Create a HTTP(S) Server
+ * 
+ * @param fn The request handler
+ */
+export function createServer (fn: RequestHandler): Server;
+
+/**
+ * Create a HTTP(S) Server
+ */
+export function createServer (): Server;

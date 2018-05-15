@@ -1,16 +1,17 @@
 
+import * as net from 'net'
 import * as assert from 'assert'
 import is from '@sindresorhus/is'
 import * as createDebugger from 'debug'
 import { Dispatcher } from 'aldo-middleware'
 import { ContextFactory, Context } from './context'
-import { Request, Response, ResponseFactory, createServer, Server } from 'aldo-http'
+import { Request, Response, createServer, Server, RequestHandler } from 'aldo-http'
 
 const debug = createDebugger('aldo:application')
 
 export type Middleware = (ctx: Context, next: () => any) => any
 
-export default class Application {
+export class Application {
   /**
    * The context factory
    */
@@ -34,16 +35,26 @@ export default class Application {
   }
 
   /**
-   * Return a request handler
+   * Handle the incoming request
+   * 
+   * @param request
+   * @public
    */
-  public callback (): (req: Request, res: ResponseFactory) => Promise<Response> {
-    return (request, response) => {
-      let ctx = this._context.create(request, response)
+  public handle (request: Request): Promise<any> {
+    let ctx = this._context.create(request)
 
-      debug(`dispatching: ${request.method} ${request.url}`)
+    debug(`dispatching: ${request.method} ${request.url}`)
 
-      return this._dispatcher.dispatch(ctx)
-    }
+    return this._dispatcher.dispatch(ctx)
+  }
+
+  /**
+   * Return a request handler
+   * 
+   * @public
+   */
+  public callback (): RequestHandler {
+    return (request) => this.handle(request)
   }
 
   /**
@@ -51,6 +62,7 @@ export default class Application {
    *
    * @param prop
    * @param fn
+   * @public
    */
   public bind (prop: string, fn: (ctx: Context) => any) {
     assert(typeof fn === 'function', `Expect a function but got: ${is(fn)}.`)
@@ -64,6 +76,7 @@ export default class Application {
    *
    * @param prop
    * @param value
+   * @public
    */
   public set (prop: string, value: any) {
     debug(`set a shared context property: ${prop}`)
@@ -75,6 +88,7 @@ export default class Application {
    * Get a value from the app context
    *
    * @param prop
+   * @public
    */
   public get (prop: string): any {
     return this._context.get(prop)
@@ -84,6 +98,7 @@ export default class Application {
    * Check if the prop is defined in the app context
    *
    * @param prop
+   * @public
    */
   public has (prop: string): boolean {
     return this._context.has(prop)
@@ -92,9 +107,9 @@ export default class Application {
   /**
    * Shorthand for:
    *
-   *     http.createServer(app.callback()).listen(...args)
+   *     http.createServer(app.callback()).start(...arguments)
    */
-  // public listen (portOrOptions: number): Server {
-  //   return createServer(this.callback()).start(portOrOptions)
-  // }
+  public start (portOrOptions?: number | net.ListenOptions): Promise<Server> {
+    return createServer(this.callback()).start(portOrOptions)
+  }
 }

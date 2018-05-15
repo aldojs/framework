@@ -1,9 +1,8 @@
 
-import { Request, ResponseFactory } from 'aldo-http'
+import { Request } from 'aldo-http'
 
 export interface Context {
   request: Request
-  response: ResponseFactory
   [field: string]: any
 }
 
@@ -91,10 +90,9 @@ export class ContextFactory {
    *
    * @public
    */
-  create (request: Request, response: ResponseFactory): Context {
+  create (request: Request): Context {
     let ctx = Object.create(this._store)
 
-    ctx.response = response
     ctx.request = request
 
     return ctx

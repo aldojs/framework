@@ -1,7 +1,10 @@
 
 import * as assert from 'assert'
 import is from '@sindresorhus/is'
-import { Middleware, ComposedMiddleware } from './types'
+
+export type Middleware<T> = (context: T, next: () => any) => any;
+
+export type ComposedMiddleware<T> = (context: T, done?: () => any) => Promise<any>;
 
 /**
  * Compose the given middlewares

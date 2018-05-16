@@ -6,9 +6,9 @@ import is from '@sindresorhus/is'
 import { setImmediate } from 'timers'
 import { Response } from './response'
 
-export type RequestHandler = HandlerFn | { handle: HandlerFn }
+export type RequestHandler = CallableHandler | { handle: CallableHandler }
 
-export type HandlerFn = (request: Request) => any
+export type CallableHandler = (request: Request) => any
 
 export type EventListener = (...args: any[]) => any
 
@@ -24,10 +24,8 @@ export class Server {
   }
 
   /**
-   * Add a `listener` for the given `event`
+   * Add a request handler
    * 
-   * @param event request event name
-   * @param handler The request handler
    * @public
    */
   public on (event: 'request', handler: RequestHandler): this;
@@ -54,8 +52,8 @@ export class Server {
    * 
    * @public
    */
-  public start (portOrOptions: number | net.ListenOptions): Promise<Server> {
-    return new Promise<Server>((resolve, reject) => {
+  public start (portOrOptions: number | net.ListenOptions): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       // attach the error listener
       this.native.once('error', reject)
 
@@ -65,7 +63,7 @@ export class Server {
         this.native.removeListener('error', reject)
 
         // resolve the promise
-        resolve(this)
+        resolve()
       })
     })
   }
@@ -77,9 +75,7 @@ export class Server {
    */
   public stop (): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.native.close((err: any) => {
-        err ? reject(err) : resolve()
-      })
+      this.native.close((e: any) => e ? reject(e) : resolve())
     })
   }
 

@@ -11,7 +11,7 @@ export interface createServerOptions {
 /**
  * Create a HTTP(S) Server
  * 
- * @param options Server options
+ * @param options The `Server` options
  * @param handler The request handler
  * @public
  */
@@ -20,7 +20,7 @@ export function createServer (options: createServerOptions, handler: RequestHand
 /**
  * Create a HTTP(S) Server
  * 
- * @param options Server options
+ * @param options The `Server` options
  * @public
  */
 export function createServer (options: createServerOptions): Server
@@ -34,13 +34,12 @@ export function createServer (options: createServerOptions): Server
 export function createServer (handler: RequestHandler): Server
 
 /**
- * Create a HTTP(S) Server
+ * Create a HTTP(S) server
  * 
  * @public
  */
 export function createServer (): Server
 
-// implementation
 export function createServer (options: any = {}, fn?: any) {
   if (is.function_(options)) {
     fn = options

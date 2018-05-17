@@ -4,9 +4,8 @@
 import * as net from 'net';
 import * as http from 'http';
 import * as https from 'https';
-import * as stream from 'stream';
 
-export type Request = http.IncomingMessage;
+export declare type Request = http.IncomingMessage;
 
 export declare class Response {
   /**
@@ -176,9 +175,9 @@ export declare class Response {
   send(res: http.ServerResponse): void;
 }
 
-export type RequestHandler = HandlerFn | { handle: HandlerFn; };
+export declare type RequestHandler = CallableHandler | { handle: CallableHandler; };
 
-export type HandlerFn = (request: Request) => any;
+export declare type CallableHandler = (request: Request) => any;
 
 export declare type EventListener = (...args: any[]) => any;
 
@@ -196,13 +195,19 @@ export declare class Server {
   constructor(native: http.Server | https.Server);
 
   /**
+   * Add a request handler
+   * 
+   * @public
+   */
+  on(event: 'request', handler: RequestHandler): this;
+
+  /**
    * Add a `listener` for the given `event`
    *
    * @param event The event name
    * @param handler The event listener
    * @public
    */
-  on(event: 'request', handler: RequestHandler): this;
   on(event: string, fn: EventListener): this;
 
   /**
@@ -210,7 +215,7 @@ export declare class Server {
    *
    * @public
    */
-  start(portOrOptions?: number | net.ListenOptions): Promise<Server>;
+  start(portOrOptions?: number | net.ListenOptions): Promise<void>;
 
   /**
    * Stops the server from accepting new requests
@@ -220,34 +225,34 @@ export declare class Server {
   stop(): Promise<void>;
 }
 
-export interface createServerOptions {
+export declare interface createServerOptions {
   tls?: https.ServerOptions
 }
 
 /**
  * Create a HTTP(S) Server
  * 
- * @param options Server options
+ * @param options The `Server` options
  * @param handler The request handler
  * @public
  */
-export function createServer (options: createServerOptions, handler: RequestHandler): Server;
+export declare function createServer (options: createServerOptions, handler: RequestHandler): Server;
 
 /**
  * Create a HTTP(S) Server
  * 
- * @param options Server options
+ * @param options The `Server` options
  */
-export function createServer (options: createServerOptions): Server;
+export declare function createServer (options: createServerOptions): Server;
 
 /**
  * Create a HTTP(S) Server
  * 
  * @param handler The request handler
  */
-export function createServer (handler: RequestHandler): Server;
+export declare function createServer (handler: RequestHandler): Server;
 
 /**
  * Create a HTTP(S) Server
  */
-export function createServer (): Server;
+export declare function createServer (): Server;

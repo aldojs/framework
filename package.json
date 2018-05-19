@@ -1,6 +1,39 @@
 {
-	"devDependencies": {
-		"lerna": "^2.11.0",
-		"typescript": "^2.8.3"
-	}
+  "name": "aldo",
+  "version": "1.0.0-alpha",
+  "description": "The missing Node.js web framework",
+  "types": "lib/index.d.ts",
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "aldo",
+    "fast",
+    "http",
+    "web",
+    "framework"
+  ],
+  "bugs": {
+    "url": "https://github.com/aldojs/framework/issues"
+  },
+  "author": "absolux",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "aldo-application": "^1.0.0-alpha",
+    "aldo-http": "^1.0.0-alpha",
+    "aldo-compose": "^3.1.1",
+    "aldo-context": "^1.1.1"
+  }
 }

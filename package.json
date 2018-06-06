@@ -15,9 +15,13 @@
   "files": [
     "lib"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aldojs/framework.git"
+  },
   "keywords": [
     "aldo",
-    "fast",
+    "micro",
     "http",
     "web",
     "framework"
@@ -25,16 +29,14 @@
   "bugs": {
     "url": "https://github.com/aldojs/framework/issues"
   },
+  "homepage": "https://github.com/aldojs/application#readme",
   "author": "absolux",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^8.10.17",
     "typescript": "^2.8.3"
   },
   "dependencies": {
-    "aldo-application": "^1.0.0-alpha",
-    "aldo-http": "^1.0.0-alpha",
-    "aldo-compose": "^3.1.1",
-    "aldo-context": "^1.1.1"
+    "aldo-application": "^1.0.0-alpha.0",
+    "aldo-http": "^1.0.0-alpha.3"
   }
 }
